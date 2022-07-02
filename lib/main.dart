@@ -7,6 +7,67 @@ class MyApp extends StatelessWidget {
 
   static const String _title = 'Flutter Code Sample';
 
+  Widget _weatherRightNow(String degree, String feelsLikeDegree) => Row(
+        children: [
+          Image.asset(
+            'assets/images/meteotrend_sun_and_cloud2.png',
+            height: 100,
+            width: 100,
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(degree, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45, fontFamily: 'Times New Roman'),),
+              Text(feelsLikeDegree, style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontFamily: 'Times New Roman'),),
+            ],
+          ),
+        ],
+      );
+
+  Widget _weatherDay(String degree, String time) => Column(
+        children: [
+          Container(
+            child: Text(degree, style: TextStyle(color: Colors.white, fontSize: 13, fontFamily: 'Times New Roman'),),
+            decoration: BoxDecoration(
+              color: Colors.teal,
+              border: Border.all(width: 1, color: Colors.teal),
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(5), topRight: Radius.circular(5)),
+            ),
+            margin: const EdgeInsets.all(2.0),
+            alignment: Alignment.topCenter,
+            padding: EdgeInsets.all(5.0),
+            constraints: BoxConstraints.tightForFinite(width: 40, height: 160),
+          ),
+          Text(time, style: TextStyle(fontFamily: 'Times New Roman'),),
+        ],
+      );
+
+  Widget _weatherWeek(String weekday, String degree) => Row(
+        children: [
+          Image.asset(
+            'assets/images/meteotrend_sun_and_cloud2.png',
+            height: 40,
+            width: 40,
+          ),
+          Text(weekday, style: TextStyle(fontFamily: 'Times New Roman'),),
+          Container(
+            child: Text(degree, style: TextStyle(color: Colors.white, fontSize: 26, fontFamily: 'Times New Roman'),),
+            decoration: BoxDecoration(
+              color: Colors.deepPurple,
+              border: Border.all(width: 1, color: Colors.deepPurple),
+              borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(5),
+                  topRight: Radius.circular(5)),
+            ),
+            margin: const EdgeInsets.all(2.0),
+            alignment: Alignment.centerRight,
+            padding: EdgeInsets.all(5.0),
+            constraints: BoxConstraints.tightForFinite(width: 160, height: 40),
+          ),
+        ],
+      );
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,254 +82,41 @@ class MyApp extends StatelessWidget {
               //height: 200,
               child: Column(
                 children: [
-                  Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        'assets/images/meteotrend_sun_and_cloud2.png',
-                        height: 100,
-                        width: 100,
-                      ),
-                      Column(
-                        //mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('14C'),
-                          Text('feels like 10C'),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            child: Text('14C'),
-                            color: Colors.blue,
-                            margin: const EdgeInsets.all(10.0),
-                            alignment: Alignment.topCenter,
-                            //padding: EdgeInsets.all(0.20),
-                            constraints: BoxConstraints.tightForFinite(
-                                width: 40, height: 160),
-                          ),
-                          Text('10:00'),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            child: Text('15C'),
-                            color: Colors.blue,
-                            margin: const EdgeInsets.all(10.0),
-                            alignment: Alignment.topCenter,
-                            //padding: EdgeInsets.all(0.20),
-                            constraints: BoxConstraints.tightForFinite(
-                                width: 40, height: 160),
-                          ),
-                          Text('12:00'),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            child: Text('15C'),
-                            color: Colors.blue,
-                            margin: const EdgeInsets.all(10.0),
-                            alignment: Alignment.topCenter,
-                            //padding: EdgeInsets.all(0.20),
-                            constraints: BoxConstraints.tightForFinite(
-                                width: 40, height: 160),
-                          ),
-                          Text('14:00'),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            child: Text('15C'),
-                            color: Colors.blue,
-                            margin: const EdgeInsets.all(10.0),
-                            alignment: Alignment.topCenter,
-                            //padding: EdgeInsets.all(0.20),
-                            constraints: BoxConstraints.tightForFinite(
-                                width: 40, height: 160),
-                          ),
-                          Text('16:00'),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            child: Text('13C'),
-                            color: Colors.blue,
-                            margin: const EdgeInsets.all(10.0),
-                            alignment: Alignment.topCenter,
-                            //padding: EdgeInsets.all(0.20),
-                            constraints: BoxConstraints.tightForFinite(
-                                width: 40, height: 160),
-                          ),
-                          Text('18:00'),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            child: Text('12C'),
-                            color: Colors.blue,
-                            margin: const EdgeInsets.all(10.0),
-                            alignment: Alignment.topCenter,
-                            //padding: EdgeInsets.all(0.20),
-                            constraints: BoxConstraints.tightForFinite(
-                                width: 40, height: 160),
-                          ),
-                          Text('20:00'),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/meteotrend_sun_and_cloud2.png',
-                                height: 50,
-                                width: 50,
-                              ),
-                              Text('MON'),
-                              Container(
-                                child: Text('12C'),
-                                color: Colors.blue,
-                                margin: const EdgeInsets.all(10.0),
-                                alignment: Alignment.centerRight,
-                                //padding: EdgeInsets.all(0.20),
-                                constraints: BoxConstraints.tightForFinite(
-                                    width: 160, height: 40),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/meteotrend_sun_and_cloud2.png',
-                                height: 50,
-                                width: 50,
-                              ),
-                              Text('TUE'),
-                              Container(
-                                child: Text('15C'),
-                                color: Colors.blue,
-                                margin: const EdgeInsets.all(10.0),
-                                alignment: Alignment.centerRight,
-                                //padding: EdgeInsets.all(0.20),
-                                constraints: BoxConstraints.tightForFinite(
-                                    width: 160, height: 40),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/meteotrend_sun_and_cloud2.png',
-                                height: 50,
-                                width: 50,
-                              ),
-                              Text('WEN'),
-                              Container(
-                                child: Text('16C'),
-                                color: Colors.blue,
-                                margin: const EdgeInsets.all(10.0),
-                                alignment: Alignment.centerRight,
-                                //padding: EdgeInsets.all(0.20),
-                                constraints: BoxConstraints.tightForFinite(
-                                    width: 160, height: 40),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/meteotrend_sun_and_cloud2.png',
-                                height: 50,
-                                width: 50,
-                              ),
-                              Text('THU'),
-                              Container(
-                                child: Text('17C'),
-                                color: Colors.blue,
-                                margin: const EdgeInsets.all(10.0),
-                                alignment: Alignment.centerRight,
-                                //padding: EdgeInsets.all(0.20),
-                                constraints: BoxConstraints.tightForFinite(
-                                    width: 160, height: 40),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/meteotrend_sun_and_cloud2.png',
-                                height: 50,
-                                width: 50,
-                              ),
-                              Text('FRI'),
-                              Container(
-                                child: Text('21C'),
-                                color: Colors.blue,
-                                margin: const EdgeInsets.all(10.0),
-                                alignment: Alignment.centerRight,
-                                //padding: EdgeInsets.all(0.20),
-                                constraints: BoxConstraints.tightForFinite(
-                                    width: 160, height: 40),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/meteotrend_sun_and_cloud2.png',
-                                height: 50,
-                                width: 50,
-                              ),
-                              Text('SAT'),
-                              Container(
-                                child: Text('22C'),
-                                color: Colors.blue,
-                                margin: const EdgeInsets.all(10.0),
-                                alignment: Alignment.centerRight,
-                                //padding: EdgeInsets.all(0.20),
-                                constraints: BoxConstraints.tightForFinite(
-                                    width: 160, height: 40),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/meteotrend_sun_and_cloud2.png',
-                                height: 50,
-                                width: 50,
-                              ),
-                              Text('SUN'),
-                              Container(
-                                child: Text('22C'),
-                                color: Colors.blue,
-                                margin: const EdgeInsets.all(10.0),
-                                alignment: Alignment.centerRight,
-                                //padding: EdgeInsets.all(0.20),
-                                constraints: BoxConstraints.tightForFinite(
-                                    width: 160, height: 40),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  Text('Right Now', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35, fontFamily: 'Times New Roman'), textAlign: TextAlign.left,),
+                  _weatherRightNow('17°C', 'feels like 18°C'),
+                  Column(children: [
+                    Text('This Day', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35, fontFamily: 'Times New Roman'), textAlign: TextAlign.left,),
+                    Row(
+                      children: [
+                        _weatherDay('16°C', '10:00'),
+                        _weatherDay('17°C', '11:00'),
+                        _weatherDay('15°C', '12:00'),
+                        _weatherDay('15°C', '13:00'),
+                        _weatherDay('17°C', '14:00'),
+                        _weatherDay('19°C', '15:00'),
+                      ],
+                    )
+                  ]),
+                  Column(
+                      children: [
+                    Text('This Week', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35, fontFamily: 'Times New Roman'), textAlign: TextAlign.left),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            _weatherWeek('MON', '15°C'),
+                            _weatherWeek('TUE', '13°C'),
+                            _weatherWeek('WED', '19°C'),
+                            _weatherWeek('THU', '17°C'),
+                            _weatherWeek('FRI', '16°C'),
+                            _weatherWeek('SAT', '20°C'),
+                            _weatherWeek('SUN', '16°C'),
+                          ],
+                        ),
+                      ],
+                    )
+                  ]),
                 ],
               )),
         ));
