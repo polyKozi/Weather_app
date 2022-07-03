@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(const MaterialApp(
+    title: 'Weather forecast',
+    home: HomePage(),
+  ));
+}
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+  //const HomePage({Key? key}) : super(key: key);
 
   Widget _weatherRightNow(int degree, int feelsLikeDegree) => Row(
         children: [
           Image.asset(
-            'assets/images/meteotrend_sun_and_cloud2.png',
+            'assets/images/snow.png',
             height: 100,
             width: 100,
           ),
@@ -66,7 +72,7 @@ class MyApp extends StatelessWidget {
   Widget _weatherWeek(String weekday, int degree) => Row(
         children: [
           Image.asset(
-            'assets/images/meteotrend_sun_and_cloud2.png',
+            'assets/images/sun.png',
             height: 40,
             width: 40,
           ),
@@ -99,74 +105,139 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(
-            title: const Text('Weather forecast'),
-          ),
-          body: Container(
-              alignment: Alignment.topLeft,
-              //width: 200,
-              //height: 200,
-              child: Column(
-                children: [
-                  Text(
-                    'Right Now',
+        return Scaffold(
+      appBar: AppBar(
+        title: const Text('Weather forecast'),
+      ),
+      body: Container(
+          alignment: Alignment.topLeft,
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                Text(
+                  'Right Now',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 35,
+                      fontFamily: 'Times New Roman'),
+                  textAlign: TextAlign.left,
+                ),
+                ElevatedButton(
+                    child: Text('Choose location'),
+                    //Image.asset('assets/images/location.png'),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LocationPage()));
+                    }),
+              ]),
+               _weatherRightNow(17, 18),
+              Column(children: [
+                Text(
+                  'This Day',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 35,
+                      fontFamily: 'Times New Roman'),
+                  textAlign: TextAlign.left,
+                ),
+                Row(
+                  children: [
+                    _weatherDay(16, 10),
+                    _weatherDay(17, 11),
+                    _weatherDay(15, 12),
+                    _weatherDay(15, 13),
+                    _weatherDay(17, 14),
+                    _weatherDay(19, 15),
+                    _weatherDay(19, 16),
+                    _weatherDay(19, 17),
+                  ],
+                )
+              ]),
+              Column(children: [
+                Text('This Week',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 35,
                         fontFamily: 'Times New Roman'),
-                    textAlign: TextAlign.left,
-                  ),
-                  _weatherRightNow(17, 18),
-                  Column(children: [
-                    Text(
-                      'This Day',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 35,
-                          fontFamily: 'Times New Roman'),
-                      textAlign: TextAlign.left,
+                    textAlign: TextAlign.left),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        _weatherWeek('MON', 15),
+                        _weatherWeek('TUE', 13),
+                        _weatherWeek('WED', 19),
+                        _weatherWeek('THU', 17),
+                        _weatherWeek('FRI', 16),
+                        _weatherWeek('SAT', 20),
+                        _weatherWeek('SUN', 16),
+                      ],
                     ),
-                    Row(
-                      children: [
-                        _weatherDay(16, 10),
-                        _weatherDay(17, 11),
-                        _weatherDay(15, 12),
-                        _weatherDay(15, 13),
-                        _weatherDay(17, 14),
-                        _weatherDay(19, 15),
-                        _weatherDay(19, 16),
-                        _weatherDay(19, 17),
-                      ],
-                    )
-                  ]),
-                  Column(children: [
-                    Text('This Week',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 35,
-                            fontFamily: 'Times New Roman'),
-                        textAlign: TextAlign.left),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          children: [
-                            _weatherWeek('MON', 15),
-                            _weatherWeek('TUE', 13),
-                            _weatherWeek('WED', 19),
-                            _weatherWeek('THU', 17),
-                            _weatherWeek('FRI', 16),
-                            _weatherWeek('SAT', 20),
-                            _weatherWeek('SUN', 16),
-                          ],
-                        ),
-                      ],
-                    )
-                  ]),
-                ],
-              )),
-        ));
+                  ],
+                )
+              ]),
+            ],
+          )),
+    );
+  }
+}
+
+class LocationPage extends StatelessWidget {
+  const LocationPage({super.key});
+
+  Widget _location(String city) => Container(
+    alignment: Alignment.centerLeft,
+    height: 50,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border.all(width: 1, color: Colors.grey),
+    ),
+    padding: EdgeInsets.all(5.0),
+    child: Text(city, style: TextStyle(
+        fontSize: 26,
+        fontFamily: 'Times New Roman'),),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Choose location'),
+      ),
+        body: ListView(
+          padding: const EdgeInsets.all(8),
+          children: <Widget>[
+            _location('Omsk'),
+            _location('Tumen'),
+            _location('Kurgan'),
+            _location('Omsk'),
+            _location('Tumen'),
+            _location('Kurgan'),
+            _location('Omsk'),
+            _location('Tumen'),
+            _location('Kurgan'),
+            _location('Omsk'),
+            _location('Tumen'),
+            _location('Kurgan'),
+            _location('Omsk'),
+            _location('Tumen'),
+            _location('Kurgan'),
+            _location('Omsk'),
+            _location('Tumen'),
+            _location('Kurgan'),
+            _location('Omsk'),
+            _location('Tumen'),
+            _location('Kurgan'),
+            _location('Omsk'),
+            _location('Tumen'),
+            _location('Kurgan'),
+          ],
+        )
+    );
   }
 }
