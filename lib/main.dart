@@ -10,6 +10,7 @@ void main() {
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
   //const HomePage({Key? key}) : super(key: key);
 
   Widget _weatherRightNow(int degree, int feelsLikeDegree) => Row(
@@ -105,7 +106,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        return Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text('Weather forecast'),
       ),
@@ -113,9 +114,7 @@ class HomePage extends StatelessWidget {
           alignment: Alignment.topLeft,
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                 Text(
                   'Right Now',
                   style: TextStyle(
@@ -131,10 +130,10 @@ class HomePage extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const LocationPage()));
+                              builder: (context) => LocationPage()));
                     }),
               ]),
-               _weatherRightNow(17, 18),
+              _weatherRightNow(17, 18),
               Column(children: [
                 Text(
                   'This Day',
@@ -187,57 +186,152 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class LocationPage extends StatelessWidget {
-  const LocationPage({super.key});
+// class LocationPage extends StatelessWidget {
+//   const LocationPage({super.key});
+//
+//   Widget _location(String city) => Container(
+//     alignment: Alignment.centerLeft,
+//     height: 50,
+//     decoration: BoxDecoration(
+//       color: Colors.white,
+//       border: Border.all(width: 1, color: Colors.grey),
+//     ),
+//     padding: EdgeInsets.all(5.0),
+//     child: Text(city, style: TextStyle(
+//         fontSize: 26,
+//         fontFamily: 'Times New Roman'),),
+//   );
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Choose location'),
+//       ),
+//         body: ListView(
+//           padding: const EdgeInsets.all(8),
+//           children: <Widget>[
+//             _location('Omsk'),
+//             _location('Tumen'),
+//             _location('Kurgan'),
+//             _location('Omsk'),
+//             _location('Tumen'),
+//             _location('Kurgan'),
+//             _location('Omsk'),
+//             _location('Tumen'),
+//             _location('Kurgan'),
+//             _location('Omsk'),
+//             _location('Tumen'),
+//             _location('Kurgan'),
+//             _location('Omsk'),
+//             _location('Tumen'),
+//             _location('Kurgan'),
+//             _location('Omsk'),
+//             _location('Tumen'),
+//             _location('Kurgan'),
+//             _location('Omsk'),
+//             _location('Tumen'),
+//             _location('Kurgan'),
+//             _location('Omsk'),
+//             _location('Tumen'),
+//             _location('Kurgan'),
+//           ],
+//         )
+//     );
+//   }
+// }
 
-  Widget _location(String city) => Container(
-    alignment: Alignment.centerLeft,
-    height: 50,
-    decoration: BoxDecoration(
-      color: Colors.white,
-      border: Border.all(width: 1, color: Colors.grey),
-    ),
-    padding: EdgeInsets.all(5.0),
-    child: Text(city, style: TextStyle(
-        fontSize: 26,
-        fontFamily: 'Times New Roman'),),
-  );
+// class LocationPage extends StatefulWidget {
+//   @override
+//   _LocationPageState createState() => _LocationPageState();
+// }
+//
+// class _LocationPageState extends State<LocationPage> {
+//   bool tap = false;
+//
+//   Widget _createListView(String city) {
+//     return GestureDetector(
+//         onTap: () {
+//           setState(() {
+//             tap = !tap;
+//           });
+//         },
+//         child: Container(
+//           alignment: Alignment.centerLeft,
+//           height: 50,
+//           decoration: BoxDecoration(
+//             color: tap ? Colors.grey : Colors.white,
+//             border: Border.all(width: 1, color: Colors.grey),
+//           ),
+//           padding: EdgeInsets.all(5.0),
+//           child: Text(
+//             city,
+//             style: TextStyle(fontSize: 26, fontFamily: 'Times New Roman'),
+//           ),
+//         ));
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//         appBar: AppBar(
+//           title: const Text('Choose location'),
+//         ),
+//         body: ListView(
+//           padding: const EdgeInsets.all(8),
+//           children: <Widget>[
+//             _createListView('Omsk'),
+//             _createListView('Tumen'),
+//             _createListView('Kurgan'),
+//           ],
+//         ));
+//   }
+// }
+
+class LocationPage extends StatefulWidget {
+  @override
+  _LocationPageState createState() => _LocationPageState();
+}
+class _LocationPageState extends State<LocationPage> {
+  final List<String> cities = ["Omsk", "Tumen", "Samara", "Kurgan", "Kaliningrad"];
+  int selectedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Choose location'),
+        appBar: AppBar(
+          title: const Text('Choose location'),
+        ),
+        body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: ListView.builder(
+            itemCount: cities.length,
+            itemBuilder: _createListView,
+          ))
+        ]));
+  }
+
+  Widget _createListView(BuildContext context, int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedIndex = index;
+        });
+      },
+      child: Container(
+        alignment: Alignment.centerLeft,
+          height: 50,
+          decoration: BoxDecoration(
+            color: index == selectedIndex ? Colors.grey: Colors.white,
+            border: Border.all(width: 1, color: Colors.grey),
+          ),
+          padding: EdgeInsets.all(5.0),
+          child: Text(
+            cities[index],
+            style: TextStyle(fontSize: 26, fontFamily: 'Times New Roman'),
+          ),
       ),
-        body: ListView(
-          padding: const EdgeInsets.all(8),
-          children: <Widget>[
-            _location('Omsk'),
-            _location('Tumen'),
-            _location('Kurgan'),
-            _location('Omsk'),
-            _location('Tumen'),
-            _location('Kurgan'),
-            _location('Omsk'),
-            _location('Tumen'),
-            _location('Kurgan'),
-            _location('Omsk'),
-            _location('Tumen'),
-            _location('Kurgan'),
-            _location('Omsk'),
-            _location('Tumen'),
-            _location('Kurgan'),
-            _location('Omsk'),
-            _location('Tumen'),
-            _location('Kurgan'),
-            _location('Omsk'),
-            _location('Tumen'),
-            _location('Kurgan'),
-            _location('Omsk'),
-            _location('Tumen'),
-            _location('Kurgan'),
-          ],
-        )
     );
   }
 }
