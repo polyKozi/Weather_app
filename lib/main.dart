@@ -1,10 +1,9 @@
-//import 'dart:js_util/js_util_wasm.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:weather_forecast/api_service.dart';
 import 'package:intl/intl.dart';
-//import 'dart:convert';
+import 'dart:async';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -12,6 +11,15 @@ void main() {
     home: HomePage(),
   ));
 }
+
+int cityIndex = 0;
+final List<String> cities = [
+  "Omsk",
+  "Tumen",
+  "Samara",
+  "Kurgan",
+  "Kaliningrad"
+];
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,6 +29,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
+  final GlobalKey<_HomePage> _refreshIndicatorKey = GlobalKey<_HomePage>();
+
   CurrentWeather? _currentWeather = null;
   DayWeather? _dayWeather = null;
 
@@ -117,7 +127,7 @@ class _HomePage extends State<HomePage> {
             alignment: Alignment.topCenter,
             padding: EdgeInsets.all(5.0),
             constraints: BoxConstraints.tightForFinite(
-                width: 45,
+                width: 40,
                 height: 160 / 100 * (degree * 4).round().toInt().abs()),
           ),
           Text(
@@ -173,116 +183,173 @@ class _HomePage extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Weather forecast'),
       ),
-      body: Container(
-          alignment: Alignment.topLeft,
-          child: Column(
-            children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                const Text(
-                  'Right Now',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 35,
-                      fontFamily: 'Times New Roman'),
-                  textAlign: TextAlign.left,
-                ),
-                ElevatedButton(
-                    child: Text('Choose location'),
-                    //Image.asset('assets/images/location.png'),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LocationPage()));
-                    }),
-              ]),
-              _weatherRightNow(_currentWeather?.main.temp.toDouble() ?? 0.0,
-                  _currentWeather?.main.feelsLike.toDouble() ?? 0.0),
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                const Text(
-                  'This Day',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 35,
-                      fontFamily: 'Times New Roman'),
-                  textAlign: TextAlign.left,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    _weatherDay(
-                        _dayWeather?.list[0].main.temp.toDouble() ?? 0.0,
-                        (_getHour()) % 24),
-                    _weatherDay(
-                        _dayWeather?.list[1].main.temp.toDouble() ?? 0.0,
-                        (_getHour() + 3) % 24),
-                    _weatherDay(
-                        _dayWeather?.list[2].main.temp.toDouble() ?? 0.0,
-                        (_getHour() + 6) % 24),
-                    _weatherDay(
-                        _dayWeather?.list[3].main.temp.toDouble() ?? 0.0,
-                        (_getHour() + 9) % 24),
-                    _weatherDay(
-                        _dayWeather?.list[4].main.temp.toDouble() ?? 0.0,
-                        (_getHour() + 12) % 24),
-                    _weatherDay(
-                        _dayWeather?.list[5].main.temp.toDouble() ?? 0.0,
-                        (_getHour() + 15) % 24),
-                    _weatherDay(
-                        _dayWeather?.list[6].main.temp.toDouble() ?? 0.0,
-                        (_getHour() + 18) % 24),
-                    _weatherDay(
-                        _dayWeather?.list[7].main.temp.toDouble() ?? 0.0,
-                        (_getHour() + 21) % 24),
-                  ],
-                )
-              ]),
-              Column(
-                  children: [
-                Container(
-                  constraints: BoxConstraints.tightForFinite(width: 200, height: 60),
-                  alignment: Alignment.center,
-                  child: Text('This Week',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 35,
-                        fontFamily: 'Times New Roman'),
-                    textAlign: TextAlign.left),),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _weatherWeek(
-                            weekDays[_getWeekDay()].toString(),
-                            _dayWeather?.list[0].main.temp.toDouble() ?? 0.0,
-                            0),
-                        _weatherWeek(
-                            weekDays[(_getWeekDay() + 1) % 7].toString(),
-                            _dayWeather?.list[7].main.temp.toDouble() ?? 0.0,
-                            7),
-                        _weatherWeek(
-                            weekDays[(_getWeekDay() + 2) % 7].toString(),
-                            _dayWeather?.list[15].main.temp.toDouble() ?? 0.0,
-                            15),
-                        _weatherWeek(
-                            weekDays[(_getWeekDay() + 3) % 7].toString(),
-                            _dayWeather?.list[31].main.temp.toDouble() ?? 0.0,
-                            31),
-                        _weatherWeek(
-                            weekDays[(_getWeekDay() + 4) % 7].toString(),
-                            _dayWeather?.list[39].main.temp.toDouble() ?? 0.0,
-                            39),
-                      ],
-                    ),
-                  ],
-                )
-              ]),
-            ],
-          )),
+      body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        color: Colors.white,
+        backgroundColor: Colors.blue,
+        strokeWidth: 4.0,
+        onRefresh: () async {
+          //return Future<void>.delayed(const Duration(seconds: 3));
+          return Future.delayed(const Duration(milliseconds: 500))
+              .then((value) => setState(() {}));
+        },
+        child: ListView.builder(
+          itemCount: 1,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+                title: Container(
+                    child: Container(
+                        alignment: Alignment.topLeft,
+                        child: Column(
+                          children: [
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const Text(
+                                    'Right Now',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 35,
+                                        fontFamily: 'Times New Roman'),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  ElevatedButton(
+                                      child: Text('Choose location'),
+                                      //Image.asset('assets/images/location.png'),
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    LocationPage()));
+                                      }),
+                                ]),
+                            _weatherRightNow(
+                                _currentWeather?.main.temp.toDouble() ?? 0.0,
+                                _currentWeather?.main.feelsLike.toDouble() ??
+                                    0.0),
+                            Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  const Text(
+                                    'This Day',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 35,
+                                        fontFamily: 'Times New Roman'),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      _weatherDay(
+                                          _dayWeather?.list[0].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          (_getHour()) % 24),
+                                      _weatherDay(
+                                          _dayWeather?.list[1].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          (_getHour() + 3) % 24),
+                                      _weatherDay(
+                                          _dayWeather?.list[2].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          (_getHour() + 6) % 24),
+                                      _weatherDay(
+                                          _dayWeather?.list[3].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          (_getHour() + 9) % 24),
+                                      _weatherDay(
+                                          _dayWeather?.list[4].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          (_getHour() + 12) % 24),
+                                      _weatherDay(
+                                          _dayWeather?.list[5].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          (_getHour() + 15) % 24),
+                                      _weatherDay(
+                                          _dayWeather?.list[6].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          (_getHour() + 18) % 24),
+                                      _weatherDay(
+                                          _dayWeather?.list[7].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          (_getHour() + 21) % 24),
+                                    ],
+                                  )
+                                ]),
+                            Column(children: [
+                              Container(
+                                constraints: BoxConstraints.tightForFinite(
+                                    width: 200, height: 60),
+                                alignment: Alignment.center,
+                                child: Text('This Week',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 35,
+                                        fontFamily: 'Times New Roman'),
+                                    textAlign: TextAlign.left),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _weatherWeek(
+                                          weekDays[_getWeekDay()].toString(),
+                                          _dayWeather?.list[0].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          0),
+                                      _weatherWeek(
+                                          weekDays[(_getWeekDay() + 1) % 7]
+                                              .toString(),
+                                          _dayWeather?.list[7].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          7),
+                                      _weatherWeek(
+                                          weekDays[(_getWeekDay() + 2) % 7]
+                                              .toString(),
+                                          _dayWeather?.list[15].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          15),
+                                      _weatherWeek(
+                                          weekDays[(_getWeekDay() + 3) % 7]
+                                              .toString(),
+                                          _dayWeather?.list[31].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          31),
+                                      _weatherWeek(
+                                          weekDays[(_getWeekDay() + 4) % 7]
+                                              .toString(),
+                                          _dayWeather?.list[39].main.temp
+                                                  .toDouble() ??
+                                              0.0,
+                                          39),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            ]),
+                          ],
+                        ))));
+          },
+        ),
+      ),
     );
   }
 }
@@ -293,13 +360,6 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
-  final List<String> cities = [
-    "Omsk",
-    "Tumen",
-    "Samara",
-    "Kurgan",
-    "Kaliningrad"
-  ];
   int selectedIndex = -1;
 
   @override
@@ -322,6 +382,7 @@ class _LocationPageState extends State<LocationPage> {
       onTap: () {
         setState(() {
           selectedIndex = index;
+          cityIndex = index;
         });
       },
       child: Container(

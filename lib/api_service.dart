@@ -1,12 +1,13 @@
 import 'package:http/http.dart' as http;
 import 'dart:developer';
 import 'dart:convert';
+import 'package:weather_forecast/main.dart';
 
 
 class ApiConstants {
-  static String currentWeatherUrl = 'https://api.openweathermap.org/data/2.5/weather?q=Omsk&units=metric&appid=';
-  static String dayWeatherUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=Omsk&units=metric&appid=';
-  static String APIkey = 'd42ab1d240d243640d5099b2a2e84996';
+  static String currentWeatherUrl = 'https://api.openweathermap.org/data/2.5/weather?q=';
+  static String dayWeatherUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=';
+  static String APIkey = '&units=metric&appid=d42ab1d240d243640d5099b2a2e84996';
 }
 
 List<CurrentWeather> currentWeatherListlFromJson(String str) =>
@@ -55,34 +56,34 @@ class Main {
   Main({
     required this.temp,
     required this.feelsLike,
-    required this.tempMin,
-    required this.tempMax,
+    // required this.tempMin,
+    // required this.tempMax,
   });
 
   num temp;
   num feelsLike;
-  num tempMin;
-  num tempMax;
+  // num tempMin;
+  // num tempMax;
 
   factory Main.fromJson(Map<String, dynamic> json) => Main(
     temp: json["temp"],
     feelsLike: json["feels_like"],
-    tempMin: json["temp_min"],
-    tempMax: json["temp_max"],
+    // tempMin: json["temp_min"],
+    // tempMax: json["temp_max"],
   );
 
   Map<String, dynamic> toJson() => {
     "temp": temp,
     "feels_like": feelsLike,
-    "temp_min": tempMin,
-    "temp_max": tempMax,
+    // "temp_min": tempMin,
+    // "temp_max": tempMax,
   };
 }
 
 class ApiServiceCurrentWeather {
   Future<CurrentWeather?> getCurrentWeather() async {
     try {
-      var url = Uri.parse(ApiConstants.currentWeatherUrl + ApiConstants.APIkey);
+      var url = Uri.parse(ApiConstants.currentWeatherUrl + cities[cityIndex] + ApiConstants.APIkey);
       var response = await http.get(url);;
       if (response.statusCode == 200) {
         Map<String, dynamic> json = jsonDecode(response.body);
@@ -146,7 +147,7 @@ class PerHour {
 class ApiServiceDayWeather {
   Future<DayWeather?> getDayWeather() async {
     // try {
-      var url = Uri.parse(ApiConstants.dayWeatherUrl + ApiConstants.APIkey);
+      var url = Uri.parse(ApiConstants.dayWeatherUrl + cities[cityIndex] + ApiConstants.APIkey);
       var response = await http.get(url);
       if (response.statusCode == 200) {
         Map<String, dynamic> json = jsonDecode(response.body);
