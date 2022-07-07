@@ -60,7 +60,7 @@ class Main {
   });
 
   double temp;
-  double feelsLike;
+  num feelsLike;
   double tempMin;
   double tempMax;
 
@@ -132,8 +132,8 @@ class PerHour {
 
   factory PerHour.fromJson(Map<String, dynamic> json) => PerHour(
     weather: List<Weather>.from(json["weather"].map((model)=> Weather.fromJson(model))),
-    dtTxt: json["dt_txt"],
-    main: json["main"],
+    dtTxt: json["dt_txt"] as String,
+    main: Main.fromJson(json["main"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -145,7 +145,7 @@ class PerHour {
 
 class ApiServiceDayWeather {
   Future<DayWeather?> getDayWeather() async {
-    try {
+    // try {
       var url = Uri.parse(ApiConstants.dayWeatherUrl + ApiConstants.APIkey);
       var response = await http.get(url);
       if (response.statusCode == 200) {
@@ -158,9 +158,9 @@ class ApiServiceDayWeather {
         log(response.statusCode.toString() + "R");
         return null;
       }
-    } catch (e) {
-      log(e.toString()+ "RE", error: e);
-      return null;
-    }
+    // } catch (e) {
+    //   log(e.toString()+ "RE", error: e);
+    //   return null;
+    // }
   }
 }

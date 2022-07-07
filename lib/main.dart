@@ -33,7 +33,7 @@ class _HomePage extends State<HomePage> {
   void _getData() async {
     _currentWeather = (await ApiServiceCurrentWeather().getCurrentWeather());
     _dayWeather = (await ApiServiceDayWeather().getDayWeather());
-    Future.delayed(const Duration(milliseconds: 150)).then((value) => setState(() {}));
+    Future.delayed(const Duration(milliseconds: 500)).then((value) => setState(() {}));
   }
 
   String _getPictureCur() {
@@ -46,7 +46,7 @@ class _HomePage extends State<HomePage> {
 
   int _getHour() {
     var date = (_dayWeather?.list[0].dtTxt.toString() ?? 0).toString();
-    return int.parse(date.substring(0, 1));
+    return int.parse(date.substring(11, 13));
     // var date = (_dayWeather?.list[0].dtTxt ?? 0);
     // DateFormat format = new DateFormat("yyyy-MM-dd HH:mm:ss");
     // date = format.parse(date.toString()) as String;
@@ -56,7 +56,7 @@ class _HomePage extends State<HomePage> {
   Widget _weatherRightNow(double degree, double feelsLikeDegree) => Row(
         children: [
           Image.asset(
-            'assets/images/02n.png',
+            'assets/images/' + _getPictureCur() + '.png',
             height: 100,
             width: 100,
           ),
@@ -64,14 +64,14 @@ class _HomePage extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                (degree.toDouble()).toString() + '°C',
+                ((degree.toDouble()).round()).toString() + '°C',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 45,
                     fontFamily: 'Times New Roman'),
               ),
               Text(
-                'Feels like' + (feelsLikeDegree.toDouble()).toString() + '°C',
+                'Feels like ' + (feelsLikeDegree.toDouble().round()).toString() + '°C',
                 style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class _HomePage extends State<HomePage> {
         children: [
           Container(
             child: Text(
-              degree.toString() + '°C',
+              degree.round().toString() + '°C',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 13,
@@ -113,7 +113,7 @@ class _HomePage extends State<HomePage> {
   Widget _weatherWeek(String weekday, double degree) => Row(
         children: [
           Image.asset(
-            'assets/images/04n.png',
+            'assets/images/' + _getPictureDay() + '.png',
             height: 40,
             width: 40,
           ),
@@ -123,7 +123,7 @@ class _HomePage extends State<HomePage> {
           ),
           Container(
             child: Text(
-              degree.toString() + '°C',
+              degree.round().toString() + '°C',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 26,
@@ -173,7 +173,7 @@ class _HomePage extends State<HomePage> {
                               builder: (context) => LocationPage()));
                     }),
               ]),
-              _weatherRightNow(_currentWeather?.main.temp ?? 0  , _currentWeather?.main.feelsLike ?? 0),
+              _weatherRightNow(_currentWeather?.main.temp ?? 0  , _currentWeather?.main.feelsLike.toDouble() ?? 0.0),
               Column(children: [
                 const Text(
                   'This Day',
