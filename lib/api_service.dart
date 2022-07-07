@@ -59,10 +59,10 @@ class Main {
     required this.tempMax,
   });
 
-  double temp;
+  num temp;
   num feelsLike;
-  double tempMin;
-  double tempMax;
+  num tempMin;
+  num tempMax;
 
   factory Main.fromJson(Map<String, dynamic> json) => Main(
     temp: json["temp"],

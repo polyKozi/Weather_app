@@ -23,26 +23,41 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage> {
   CurrentWeather? _currentWeather = null;
   DayWeather? _dayWeather = null;
+
   @override
   void initState() {
     super.initState();
     _getData();
-
   }
 
   void _getData() async {
     _currentWeather = (await ApiServiceCurrentWeather().getCurrentWeather());
     _dayWeather = (await ApiServiceDayWeather().getDayWeather());
-    Future.delayed(const Duration(milliseconds: 500)).then((value) => setState(() {}));
+    Future.delayed(const Duration(milliseconds: 500))
+        .then((value) => setState(() {}));
   }
 
   String _getPictureCur() {
     return (_currentWeather?.weather[0].icon).toString();
   }
 
-  String _getPictureDay() {
-    return (_dayWeather?.list[0].weather[0].icon).toString();
+  String _getPictureDay(index) {
+    return (_dayWeather?.list[index].weather[0].icon).toString();
   }
+
+  int _getWeekDay() {
+    return DateTime.now().weekday.toInt();
+  }
+
+  var weekDays = {
+    0: "SUN",
+    1: "MON",
+    2: "TUE",
+    3: "WED",
+    4: "THU",
+    5: "FRI",
+    6: "SAT"
+  };
 
   int _getHour() {
     var date = (_dayWeather?.list[0].dtTxt.toString() ?? 0).toString();
@@ -64,14 +79,14 @@ class _HomePage extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                ((degree.toDouble()).round()).toString() + '°C',
+                degree.round().toString() + '°C',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 45,
                     fontFamily: 'Times New Roman'),
               ),
               Text(
-                'Feels like ' + (feelsLikeDegree.toDouble().round()).toString() + '°C',
+                'Feels like ' + feelsLikeDegree.round().toString() + '°C',
                 style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.bold,
@@ -101,7 +116,9 @@ class _HomePage extends State<HomePage> {
             margin: const EdgeInsets.all(2.0),
             alignment: Alignment.topCenter,
             padding: EdgeInsets.all(5.0),
-            constraints: BoxConstraints.tightForFinite(width: 45, height: 160),
+            constraints: BoxConstraints.tightForFinite(
+                width: 45,
+                height: 160 / 100 * (degree * 4).round().toInt().abs()),
           ),
           Text(
             time.toString() + ':00',
@@ -110,16 +127,20 @@ class _HomePage extends State<HomePage> {
         ],
       );
 
-  Widget _weatherWeek(String weekday, double degree) => Row(
+  Widget _weatherWeek(String weekday, double degree, int index) => Row(
         children: [
           Image.asset(
-            'assets/images/' + _getPictureDay() + '.png',
+            'assets/images/' + _getPictureDay(index) + '.png',
             height: 40,
             width: 40,
           ),
-          Text(
-            weekday,
-            style: TextStyle(fontFamily: 'Times New Roman'),
+          Container(
+            alignment: Alignment.center,
+            constraints: BoxConstraints.tightForFinite(width: 40, height: 20),
+            child: Text(
+              weekday,
+              style: TextStyle(fontFamily: 'Times New Roman'),
+            ),
           ),
           Container(
             child: Text(
@@ -139,7 +160,9 @@ class _HomePage extends State<HomePage> {
             margin: const EdgeInsets.all(2.0),
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.all(5.0),
-            constraints: const BoxConstraints.tightForFinite(width: 160, height: 40),
+            constraints: BoxConstraints.tightForFinite(
+                width: 160 / 100 * (degree * 4).round().toInt().abs(),
+                height: 40),
           ),
         ],
       );
@@ -173,8 +196,11 @@ class _HomePage extends State<HomePage> {
                               builder: (context) => LocationPage()));
                     }),
               ]),
-              _weatherRightNow(_currentWeather?.main.temp ?? 0  , _currentWeather?.main.feelsLike.toDouble() ?? 0.0),
-              Column(children: [
+              _weatherRightNow(_currentWeather?.main.temp.toDouble() ?? 0.0,
+                  _currentWeather?.main.feelsLike.toDouble() ?? 0.0),
+              Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
                 const Text(
                   'This Day',
                   style: TextStyle(
@@ -184,35 +210,72 @@ class _HomePage extends State<HomePage> {
                   textAlign: TextAlign.left,
                 ),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _weatherDay(_dayWeather?.list[0].main.temp ?? 0, (_getHour()) % 24),
-                    _weatherDay(_dayWeather?.list[1].main.temp ?? 0, (_getHour() + 3) % 24),
-                    _weatherDay(_dayWeather?.list[2].main.temp ?? 0, (_getHour() + 6) % 24),
-                    _weatherDay(_dayWeather?.list[3].main.temp ?? 0, (_getHour() + 9) % 24),
-                    _weatherDay(_dayWeather?.list[4].main.temp ?? 0, (_getHour() + 12) % 24),
-                    _weatherDay(_dayWeather?.list[5].main.temp ?? 0, (_getHour() + 15) % 24),
-                    _weatherDay(_dayWeather?.list[6].main.temp ?? 0, (_getHour() + 18) % 24),
-                    _weatherDay(_dayWeather?.list[7].main.temp ?? 0, (_getHour() + 21) % 24),
+                    _weatherDay(
+                        _dayWeather?.list[0].main.temp.toDouble() ?? 0.0,
+                        (_getHour()) % 24),
+                    _weatherDay(
+                        _dayWeather?.list[1].main.temp.toDouble() ?? 0.0,
+                        (_getHour() + 3) % 24),
+                    _weatherDay(
+                        _dayWeather?.list[2].main.temp.toDouble() ?? 0.0,
+                        (_getHour() + 6) % 24),
+                    _weatherDay(
+                        _dayWeather?.list[3].main.temp.toDouble() ?? 0.0,
+                        (_getHour() + 9) % 24),
+                    _weatherDay(
+                        _dayWeather?.list[4].main.temp.toDouble() ?? 0.0,
+                        (_getHour() + 12) % 24),
+                    _weatherDay(
+                        _dayWeather?.list[5].main.temp.toDouble() ?? 0.0,
+                        (_getHour() + 15) % 24),
+                    _weatherDay(
+                        _dayWeather?.list[6].main.temp.toDouble() ?? 0.0,
+                        (_getHour() + 18) % 24),
+                    _weatherDay(
+                        _dayWeather?.list[7].main.temp.toDouble() ?? 0.0,
+                        (_getHour() + 21) % 24),
                   ],
                 )
               ]),
-              Column(children: [
-                Text('This Week',
+              Column(
+                  children: [
+                Container(
+                  constraints: BoxConstraints.tightForFinite(width: 200, height: 60),
+                  alignment: Alignment.center,
+                  child: Text('This Week',
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 35,
                         fontFamily: 'Times New Roman'),
-                    textAlign: TextAlign.left),
+                    textAlign: TextAlign.left),),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _weatherWeek('MON', 15),
-                        _weatherWeek('TUE', 13),
-                        _weatherWeek('WED', 19),
-                        _weatherWeek('THU', 17),
-                        _weatherWeek('FRI', 16),
+                        _weatherWeek(
+                            weekDays[_getWeekDay()].toString(),
+                            _dayWeather?.list[0].main.temp.toDouble() ?? 0.0,
+                            0),
+                        _weatherWeek(
+                            weekDays[(_getWeekDay() + 1) % 7].toString(),
+                            _dayWeather?.list[7].main.temp.toDouble() ?? 0.0,
+                            7),
+                        _weatherWeek(
+                            weekDays[(_getWeekDay() + 2) % 7].toString(),
+                            _dayWeather?.list[15].main.temp.toDouble() ?? 0.0,
+                            15),
+                        _weatherWeek(
+                            weekDays[(_getWeekDay() + 3) % 7].toString(),
+                            _dayWeather?.list[31].main.temp.toDouble() ?? 0.0,
+                            31),
+                        _weatherWeek(
+                            weekDays[(_getWeekDay() + 4) % 7].toString(),
+                            _dayWeather?.list[39].main.temp.toDouble() ?? 0.0,
+                            39),
                       ],
                     ),
                   ],
@@ -228,8 +291,15 @@ class LocationPage extends StatefulWidget {
   @override
   _LocationPageState createState() => _LocationPageState();
 }
+
 class _LocationPageState extends State<LocationPage> {
-  final List<String> cities = ["Omsk", "Tumen", "Samara", "Kurgan", "Kaliningrad"];
+  final List<String> cities = [
+    "Omsk",
+    "Tumen",
+    "Samara",
+    "Kurgan",
+    "Kaliningrad"
+  ];
   int selectedIndex = -1;
 
   @override
@@ -238,15 +308,13 @@ class _LocationPageState extends State<LocationPage> {
         appBar: AppBar(
           title: const Text('Choose location'),
         ),
-        body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: ListView.builder(
+        body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Expanded(
+              child: ListView.builder(
             itemCount: cities.length,
             itemBuilder: _createListView,
           ))
-        ])
-    );
+        ]));
   }
 
   Widget _createListView(BuildContext context, int index) {
@@ -254,24 +322,21 @@ class _LocationPageState extends State<LocationPage> {
       onTap: () {
         setState(() {
           selectedIndex = index;
-
         });
       },
       child: Container(
         alignment: Alignment.centerLeft,
-          height: 50,
-          decoration: BoxDecoration(
-            color: index == selectedIndex ? Colors.grey: Colors.white,
-            border: Border.all(width: 1, color: Colors.grey),
-          ),
-          padding: const EdgeInsets.all(5.0),
-          child: Text(
-            cities[index],
-            style: TextStyle(fontSize: 26, fontFamily: 'Times New Roman'),
-          ),
+        height: 50,
+        decoration: BoxDecoration(
+          color: index == selectedIndex ? Colors.grey : Colors.white,
+          border: Border.all(width: 1, color: Colors.grey),
+        ),
+        padding: const EdgeInsets.all(5.0),
+        child: Text(
+          cities[index],
+          style: TextStyle(fontSize: 26, fontFamily: 'Times New Roman'),
+        ),
       ),
     );
   }
 }
-
-
