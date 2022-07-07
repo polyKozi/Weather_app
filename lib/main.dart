@@ -1,5 +1,10 @@
+//import 'dart:js_util/js_util_wasm.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:weather_forecast/api_service.dart';
+import 'package:intl/intl.dart';
+//import 'dart:convert';
 
 void main() {
   runApp(const MaterialApp(
@@ -8,15 +13,50 @@ void main() {
   ));
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
-  //const HomePage({Key? key}) : super(key: key);
+  @override
+  _HomePage createState() => _HomePage();
+}
 
-  Widget _weatherRightNow(int degree, int feelsLikeDegree) => Row(
+class _HomePage extends State<HomePage> {
+  CurrentWeather? _currentWeather = null;
+  DayWeather? _dayWeather = null;
+  @override
+  void initState() {
+    super.initState();
+    _getData();
+
+  }
+
+  void _getData() async {
+    _currentWeather = (await ApiServiceCurrentWeather().getCurrentWeather());
+    _dayWeather = (await ApiServiceDayWeather().getDayWeather());
+    Future.delayed(const Duration(milliseconds: 150)).then((value) => setState(() {}));
+  }
+
+  String _getPictureCur() {
+    return (_currentWeather?.weather[0].icon).toString();
+  }
+
+  String _getPictureDay() {
+    return (_dayWeather?.list[0].weather[0].icon).toString();
+  }
+
+  int _getHour() {
+    var date = (_dayWeather?.list[0].dtTxt.toString() ?? 0).toString();
+    return int.parse(date.substring(0, 1));
+    // var date = (_dayWeather?.list[0].dtTxt ?? 0);
+    // DateFormat format = new DateFormat("yyyy-MM-dd HH:mm:ss");
+    // date = format.parse(date.toString()) as String;
+    // return int.parse(DateFormat.HOUR24);
+  }
+
+  Widget _weatherRightNow(double degree, double feelsLikeDegree) => Row(
         children: [
           Image.asset(
-            'assets/images/snow.png',
+            'assets/images/02n.png',
             height: 100,
             width: 100,
           ),
@@ -24,14 +64,14 @@ class HomePage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                degree.toString() + '°C',
+                (degree.toDouble()).toString() + '°C',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 45,
                     fontFamily: 'Times New Roman'),
               ),
               Text(
-                'Feels like' + feelsLikeDegree.toString() + '°C',
+                'Feels like' + (feelsLikeDegree.toDouble()).toString() + '°C',
                 style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.bold,
@@ -42,7 +82,7 @@ class HomePage extends StatelessWidget {
         ],
       );
 
-  Widget _weatherDay(int degree, int time) => Column(
+  Widget _weatherDay(double degree, int time) => Column(
         children: [
           Container(
             child: Text(
@@ -70,10 +110,10 @@ class HomePage extends StatelessWidget {
         ],
       );
 
-  Widget _weatherWeek(String weekday, int degree) => Row(
+  Widget _weatherWeek(String weekday, double degree) => Row(
         children: [
           Image.asset(
-            'assets/images/sun.png',
+            'assets/images/04n.png',
             height: 40,
             width: 40,
           ),
@@ -98,8 +138,8 @@ class HomePage extends StatelessWidget {
             ),
             margin: const EdgeInsets.all(2.0),
             alignment: Alignment.centerRight,
-            padding: EdgeInsets.all(5.0),
-            constraints: BoxConstraints.tightForFinite(width: 160, height: 40),
+            padding: const EdgeInsets.all(5.0),
+            constraints: const BoxConstraints.tightForFinite(width: 160, height: 40),
           ),
         ],
       );
@@ -115,7 +155,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                Text(
+                const Text(
                   'Right Now',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -133,9 +173,9 @@ class HomePage extends StatelessWidget {
                               builder: (context) => LocationPage()));
                     }),
               ]),
-              _weatherRightNow(17, 18),
+              _weatherRightNow(_currentWeather?.main.temp ?? 0  , _currentWeather?.main.feelsLike ?? 0),
               Column(children: [
-                Text(
+                const Text(
                   'This Day',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -145,20 +185,20 @@ class HomePage extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    _weatherDay(16, 10),
-                    _weatherDay(17, 11),
-                    _weatherDay(15, 12),
-                    _weatherDay(15, 13),
-                    _weatherDay(17, 14),
-                    _weatherDay(19, 15),
-                    _weatherDay(19, 16),
-                    _weatherDay(19, 17),
+                    _weatherDay(_dayWeather?.list[0].main.temp ?? 0, (_getHour()) % 24),
+                    _weatherDay(_dayWeather?.list[1].main.temp ?? 0, (_getHour() + 3) % 24),
+                    _weatherDay(_dayWeather?.list[2].main.temp ?? 0, (_getHour() + 6) % 24),
+                    _weatherDay(_dayWeather?.list[3].main.temp ?? 0, (_getHour() + 9) % 24),
+                    _weatherDay(_dayWeather?.list[4].main.temp ?? 0, (_getHour() + 12) % 24),
+                    _weatherDay(_dayWeather?.list[5].main.temp ?? 0, (_getHour() + 15) % 24),
+                    _weatherDay(_dayWeather?.list[6].main.temp ?? 0, (_getHour() + 18) % 24),
+                    _weatherDay(_dayWeather?.list[7].main.temp ?? 0, (_getHour() + 21) % 24),
                   ],
                 )
               ]),
               Column(children: [
                 Text('This Week',
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 35,
                         fontFamily: 'Times New Roman'),
@@ -173,8 +213,6 @@ class HomePage extends StatelessWidget {
                         _weatherWeek('WED', 19),
                         _weatherWeek('THU', 17),
                         _weatherWeek('FRI', 16),
-                        _weatherWeek('SAT', 20),
-                        _weatherWeek('SUN', 16),
                       ],
                     ),
                   ],
@@ -185,108 +223,6 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-// class LocationPage extends StatelessWidget {
-//   const LocationPage({super.key});
-//
-//   Widget _location(String city) => Container(
-//     alignment: Alignment.centerLeft,
-//     height: 50,
-//     decoration: BoxDecoration(
-//       color: Colors.white,
-//       border: Border.all(width: 1, color: Colors.grey),
-//     ),
-//     padding: EdgeInsets.all(5.0),
-//     child: Text(city, style: TextStyle(
-//         fontSize: 26,
-//         fontFamily: 'Times New Roman'),),
-//   );
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Choose location'),
-//       ),
-//         body: ListView(
-//           padding: const EdgeInsets.all(8),
-//           children: <Widget>[
-//             _location('Omsk'),
-//             _location('Tumen'),
-//             _location('Kurgan'),
-//             _location('Omsk'),
-//             _location('Tumen'),
-//             _location('Kurgan'),
-//             _location('Omsk'),
-//             _location('Tumen'),
-//             _location('Kurgan'),
-//             _location('Omsk'),
-//             _location('Tumen'),
-//             _location('Kurgan'),
-//             _location('Omsk'),
-//             _location('Tumen'),
-//             _location('Kurgan'),
-//             _location('Omsk'),
-//             _location('Tumen'),
-//             _location('Kurgan'),
-//             _location('Omsk'),
-//             _location('Tumen'),
-//             _location('Kurgan'),
-//             _location('Omsk'),
-//             _location('Tumen'),
-//             _location('Kurgan'),
-//           ],
-//         )
-//     );
-//   }
-// }
-
-// class LocationPage extends StatefulWidget {
-//   @override
-//   _LocationPageState createState() => _LocationPageState();
-// }
-//
-// class _LocationPageState extends State<LocationPage> {
-//   bool tap = false;
-//
-//   Widget _createListView(String city) {
-//     return GestureDetector(
-//         onTap: () {
-//           setState(() {
-//             tap = !tap;
-//           });
-//         },
-//         child: Container(
-//           alignment: Alignment.centerLeft,
-//           height: 50,
-//           decoration: BoxDecoration(
-//             color: tap ? Colors.grey : Colors.white,
-//             border: Border.all(width: 1, color: Colors.grey),
-//           ),
-//           padding: EdgeInsets.all(5.0),
-//           child: Text(
-//             city,
-//             style: TextStyle(fontSize: 26, fontFamily: 'Times New Roman'),
-//           ),
-//         ));
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         appBar: AppBar(
-//           title: const Text('Choose location'),
-//         ),
-//         body: ListView(
-//           padding: const EdgeInsets.all(8),
-//           children: <Widget>[
-//             _createListView('Omsk'),
-//             _createListView('Tumen'),
-//             _createListView('Kurgan'),
-//           ],
-//         ));
-//   }
-// }
 
 class LocationPage extends StatefulWidget {
   @override
@@ -309,7 +245,8 @@ class _LocationPageState extends State<LocationPage> {
             itemCount: cities.length,
             itemBuilder: _createListView,
           ))
-        ]));
+        ])
+    );
   }
 
   Widget _createListView(BuildContext context, int index) {
@@ -317,6 +254,7 @@ class _LocationPageState extends State<LocationPage> {
       onTap: () {
         setState(() {
           selectedIndex = index;
+
         });
       },
       child: Container(
@@ -326,7 +264,7 @@ class _LocationPageState extends State<LocationPage> {
             color: index == selectedIndex ? Colors.grey: Colors.white,
             border: Border.all(width: 1, color: Colors.grey),
           ),
-          padding: EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(5.0),
           child: Text(
             cities[index],
             style: TextStyle(fontSize: 26, fontFamily: 'Times New Roman'),
@@ -335,3 +273,5 @@ class _LocationPageState extends State<LocationPage> {
     );
   }
 }
+
+
