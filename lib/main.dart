@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:weather_forecast/api_service.dart';
 import 'dart:async';
+import 'package:weather_forecast/models.dart';
+import 'package:weather_forecast/styles.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -85,18 +87,12 @@ class _HomePage extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                degree.round().toString() + '°C',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 45,
-                    fontFamily: 'Times New Roman'),
+                degree.round().toString() + '°',
+                style: TitleStyle,
               ),
               Text(
-                'Feels like ' + feelsLikeDegree.round().toString() + '°C',
-                style: TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Times New Roman'),
+                'Feels like ' + feelsLikeDegree.round().toString() + '°',
+                style: NumberStyle,
               ),
             ],
           ),
@@ -104,18 +100,15 @@ class _HomePage extends State<HomePage> {
       );
 
   Widget _weatherDay(double degree, int time) => Column(
+    mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Container(
             child: Text(
-              degree.round().toString() + '°C',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontFamily: 'Times New Roman'),
-            ),
+              degree.round().toString() + '°',
+              style: NumberStyle),
             decoration: BoxDecoration(
-              color: Colors.teal,
-              border: Border.all(width: 1, color: Colors.teal),
+              color: Colors.greenAccent,
+              border: Border.all(width: 1, color: Colors.greenAccent),
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(5), topRight: Radius.circular(5)),
             ),
@@ -128,10 +121,22 @@ class _HomePage extends State<HomePage> {
           ),
           Text(
             time.toString() + ':00',
-            style: TextStyle(fontFamily: 'Times New Roman'),
+            style: NumberStyle,
           ),
         ],
       );
+
+  Widget _buildWeatherDayGraph() {
+    return new ListView.builder(
+      itemCount: 8,
+      shrinkWrap: true,
+      scrollDirection: Axis.horizontal,
+
+      itemBuilder: (BuildContext context, int index) {
+
+        return _weatherDay(_dayWeather?.list[index].main.temp.toDouble() ?? 0.0, (_getHour() + index * 3) % 24);
+      },);
+  }
 
   Widget _weatherWeek(String weekday, double degree, int index) => Row(
         children: [
@@ -145,20 +150,17 @@ class _HomePage extends State<HomePage> {
             constraints: BoxConstraints.tightForFinite(width: 40, height: 20),
             child: Text(
               weekday,
-              style: TextStyle(fontFamily: 'Times New Roman'),
+              style: NumberStyle,
             ),
           ),
           Container(
             child: Text(
-              degree.round().toString() + '°C',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontFamily: 'Times New Roman'),
+              degree.round().toString() + '°',
+              style: NumberStyle,
             ),
             decoration: BoxDecoration(
-              color: Colors.deepPurple,
-              border: Border.all(width: 1, color: Colors.deepPurple),
+              color: Colors.lightBlueAccent,
+              border: Border.all(width: 1, color: Colors.lightBlueAccent),
               borderRadius: const BorderRadius.only(
                   bottomRight: Radius.circular(5),
                   topRight: Radius.circular(5)),
@@ -172,6 +174,24 @@ class _HomePage extends State<HomePage> {
           ),
         ],
       );
+
+  int _indexIs(index) {
+    if (index == 0) {
+      return 0;
+    } else {
+      return index * 8 - 1;
+    }
+  }
+
+  Widget _buildWeatherWeekGraph() {
+    return ListView.builder(
+      itemCount: 5,
+      shrinkWrap: true,
+      scrollDirection: Axis.vertical,
+      itemBuilder: (BuildContext context, int index) {
+        return _weatherWeek(weekDays[(_getWeekDay() + index) % 7].toString(), _dayWeather?.list[_indexIs(index)].main.temp.toDouble() ?? 0.0, _indexIs(index));
+      },);
+  }
 
   Widget _createListView(BuildContext context, int index) {
     return GestureDetector(
@@ -191,7 +211,7 @@ class _HomePage extends State<HomePage> {
         padding: const EdgeInsets.all(5.0),
         child: Text(
           cities[index],
-          style: TextStyle(fontSize: 26, fontFamily: 'Times New Roman'),
+          style: NumberStyle,
         ),
       ),
     );
@@ -224,12 +244,9 @@ class _HomePage extends State<HomePage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Right Now',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 35,
-                                        fontFamily: 'Times New Roman'),
+                                    style: TitleStyle,
                                     textAlign: TextAlign.left,
                                   ),
                                   ElevatedButton(
@@ -267,59 +284,16 @@ class _HomePage extends State<HomePage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'This Day',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 35,
-                                        fontFamily: 'Times New Roman'),
+                                    style: TitleStyle,
                                     textAlign: TextAlign.left,
                                   ),
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      _weatherDay(
-                                          _dayWeather?.list[0].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          (_getHour()) % 24),
-                                      _weatherDay(
-                                          _dayWeather?.list[1].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          (_getHour() + 3) % 24),
-                                      _weatherDay(
-                                          _dayWeather?.list[2].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          (_getHour() + 6) % 24),
-                                      _weatherDay(
-                                          _dayWeather?.list[3].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          (_getHour() + 9) % 24),
-                                      _weatherDay(
-                                          _dayWeather?.list[4].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          (_getHour() + 12) % 24),
-                                      _weatherDay(
-                                          _dayWeather?.list[5].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          (_getHour() + 15) % 24),
-                                      _weatherDay(
-                                          _dayWeather?.list[6].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          (_getHour() + 18) % 24),
-                                      _weatherDay(
-                                          _dayWeather?.list[7].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          (_getHour() + 21) % 24),
-                                    ],
-                                  )
+                                  Container(
+                                    alignment: Alignment.center,
+                                    constraints: BoxConstraints.tightForFinite(width: 370, height: 220),
+                                    child: _buildWeatherDayGraph(),
+                                  ),
                                 ]),
                             Column(children: [
                               Container(
@@ -327,63 +301,19 @@ class _HomePage extends State<HomePage> {
                                     width: 200, height: 60),
                                 alignment: Alignment.center,
                                 child: Text('This Week',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 35,
-                                        fontFamily: 'Times New Roman'),
+                                    style: TitleStyle,
                                     textAlign: TextAlign.left),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      _weatherWeek(
-                                          weekDays[_getWeekDay()].toString(),
-                                          _dayWeather?.list[0].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          0),
-                                      _weatherWeek(
-                                          weekDays[(_getWeekDay() + 1) % 7]
-                                              .toString(),
-                                          _dayWeather?.list[7].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          7),
-                                      _weatherWeek(
-                                          weekDays[(_getWeekDay() + 2) % 7]
-                                              .toString(),
-                                          _dayWeather?.list[15].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          15),
-                                      _weatherWeek(
-                                          weekDays[(_getWeekDay() + 3) % 7]
-                                              .toString(),
-                                          _dayWeather?.list[31].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          31),
-                                      _weatherWeek(
-                                          weekDays[(_getWeekDay() + 4) % 7]
-                                              .toString(),
-                                          _dayWeather?.list[39].main.temp
-                                                  .toDouble() ??
-                                              0.0,
-                                          39),
-                                    ],
-                                  ),
-                                ],
-                              )
+                              Container(
+                                alignment: Alignment.center,
+                                constraints: BoxConstraints.tightForFinite(width: 370, height: 220),
+                                child: _buildWeatherWeekGraph(),
+                              ),
                             ]),
                           ],
                         ))));
           },
         ),
-      ),
-    );
+  ));
   }
 }
