@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:weather_forecast/api_service.dart';
-import 'package:intl/intl.dart';
 import 'dart:async';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -33,6 +31,8 @@ class _HomePage extends State<HomePage> {
 
   CurrentWeather? _currentWeather = null;
   DayWeather? _dayWeather = null;
+
+  int selectedIndex = -1;
 
   @override
   void initState() {
@@ -72,10 +72,6 @@ class _HomePage extends State<HomePage> {
   int _getHour() {
     var date = (_dayWeather?.list[0].dtTxt.toString() ?? 0).toString();
     return int.parse(date.substring(11, 13));
-    // var date = (_dayWeather?.list[0].dtTxt ?? 0);
-    // DateFormat format = new DateFormat("yyyy-MM-dd HH:mm:ss");
-    // date = format.parse(date.toString()) as String;
-    // return int.parse(DateFormat.HOUR24);
   }
 
   Widget _weatherRightNow(double degree, double feelsLikeDegree) => Row(
@@ -177,6 +173,30 @@ class _HomePage extends State<HomePage> {
         ],
       );
 
+  Widget _createListView(BuildContext context, int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedIndex = index;
+          cityIndex = index;
+        });
+      },
+      child: Container(
+        alignment: Alignment.centerLeft,
+        height: 50,
+        decoration: BoxDecoration(
+          color: index == selectedIndex ? Colors.grey : Colors.white,
+          border: Border.all(width: 1, color: Colors.grey),
+        ),
+        padding: const EdgeInsets.all(5.0),
+        child: Text(
+          cities[index],
+          style: TextStyle(fontSize: 26, fontFamily: 'Times New Roman'),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -189,9 +209,7 @@ class _HomePage extends State<HomePage> {
         backgroundColor: Colors.blue,
         strokeWidth: 4.0,
         onRefresh: () async {
-          //return Future<void>.delayed(const Duration(seconds: 3));
-          return Future.delayed(const Duration(milliseconds: 500))
-              .then((value) => setState(() {}));
+          return _getData();
         },
         child: ListView.builder(
           itemCount: 1,
@@ -216,13 +234,29 @@ class _HomePage extends State<HomePage> {
                                   ),
                                   ElevatedButton(
                                       child: Text('Choose location'),
-                                      //Image.asset('assets/images/location.png'),
                                       onPressed: () {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) =>
-                                                    LocationPage()));
+                                                builder: (context) => Scaffold(
+                                                    appBar: AppBar(
+                                                      title: const Text(
+                                                          'Choose location'),
+                                                    ),
+                                                    body: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Expanded(
+                                                              child: ListView
+                                                                  .builder(
+                                                            itemCount:
+                                                                cities.length,
+                                                            itemBuilder:
+                                                                _createListView,
+                                                          ))
+                                                        ]))));
                                       }),
                                 ]),
                             _weatherRightNow(
@@ -348,54 +382,6 @@ class _HomePage extends State<HomePage> {
                           ],
                         ))));
           },
-        ),
-      ),
-    );
-  }
-}
-
-class LocationPage extends StatefulWidget {
-  @override
-  _LocationPageState createState() => _LocationPageState();
-}
-
-class _LocationPageState extends State<LocationPage> {
-  int selectedIndex = -1;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Choose location'),
-        ),
-        body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Expanded(
-              child: ListView.builder(
-            itemCount: cities.length,
-            itemBuilder: _createListView,
-          ))
-        ]));
-  }
-
-  Widget _createListView(BuildContext context, int index) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedIndex = index;
-          cityIndex = index;
-        });
-      },
-      child: Container(
-        alignment: Alignment.centerLeft,
-        height: 50,
-        decoration: BoxDecoration(
-          color: index == selectedIndex ? Colors.grey : Colors.white,
-          border: Border.all(width: 1, color: Colors.grey),
-        ),
-        padding: const EdgeInsets.all(5.0),
-        child: Text(
-          cities[index],
-          style: TextStyle(fontSize: 26, fontFamily: 'Times New Roman'),
         ),
       ),
     );
